@@ -1,8 +1,8 @@
 import Card from '../../components/Card'
 import styled from 'styled-components'
 import colors from '../../utils/style/colors'
-import { useState, useEffect } from 'react'
-import { Loader } from '../../utils/style/Atoms'
+import { useFetch } from '../../utils/hooks'
+import { Loader, LoaderWrapper } from '../../utils/style/Atoms'
 
 const CardsContainer = styled.div`
   display: grid;
@@ -29,26 +29,8 @@ const PageSubtitle = styled.h2`
 `
 
 function Freelances() {
-  const [freelanceData, setFreelanceData] = useState({})
-  const [isDataLoading, setDataLoading] = useState(false)
-  const [error, setError] = useState(false)
-
-  useEffect(() => {
-    async function fetchFreelances() {
-      setDataLoading(true)
-      try {
-        const response = await fetch(`http://localhost:8000/freelances`)
-        const { freelancersList } = await response.json()
-        setFreelanceData(freelancersList)
-      } catch (err) {
-        console.log('===== error =====', err)
-        setError(true)
-      } finally {
-        setDataLoading(false)
-      }
-    }
-    fetchFreelances()
-  }, [])
+  const { data, isLoading, error } = useFetch(`http://localhost:8000/freelances`)
+  const freelanceData = data?.freelancersList
 
   if (error) {
     return <span>Oups il y a eu un problème</span>
@@ -60,20 +42,22 @@ function Freelances() {
       <PageSubtitle>
         Chez Shiny nous réunissons les meilleurs profils pour vous.
       </PageSubtitle>
-      <CardsContainer>
-      {isDataLoading ? (
-        <Loader />
+      {isLoading ? (
+        <LoaderWrapper>
+          <Loader />
+        </LoaderWrapper>
       ) : (
-        freelanceData.map((profile, index) => (
+        <CardsContainer>
+        {freelanceData.map((profile, index) => (
           <Card
             key={`${profile.name}-${index}`}
             label={profile.job}
             title={profile.name}
             picture={profile.picture}
           />
-        ))
+        ))}
+        </CardsContainer>
       )}
-      </CardsContainer>
     </div>
   )
 }

@@ -22,6 +22,11 @@ export const Loader = styled.div`
   width: 0;
 `
 
+export const LoaderWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`
+
 export const StyledLink = styled(Link)`
   padding: 10px 15px;
   color: #8186a0;
